@@ -3,7 +3,6 @@ from tkinter import ttk, messagebox, filedialog, scrolledtext
 import logging
 import pathlib
 import threading
-#import subprocess
 import os
 from typing import Optional
 from ..services.audio import AudioProcessor, AudioProcessingError

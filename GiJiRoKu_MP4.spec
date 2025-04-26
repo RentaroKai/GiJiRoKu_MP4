@@ -16,7 +16,6 @@ a = Analysis(
     ],
     hiddenimports=[
         'pydub',
-        'pyperclip',
     ],
     hookspath=[],
     hooksconfig={},
