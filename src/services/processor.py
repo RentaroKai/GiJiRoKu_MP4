@@ -9,6 +9,7 @@ from .format_converter import convert_file, cleanup_file, FormatConversionError
 from .meeting_title_service import MeetingTitleService
 from .speaker_remapper import create_speaker_remapper
 from src.utils.config import config_manager
+from src.utils.video_compressor import VideoCompressor, VideoCompressionError
 
 logger = logging.getLogger(__name__)
 
@@ -22,8 +23,32 @@ def process_audio_file(input_file: Path, modes: dict) -> dict:
     # 追加: 変換フラグおよび変換後ファイル保持用変数の初期化
     conversion_performed = False
     converted_file = None
+    compression_performed = False
+    compressed_file = None
 
     try:
+        # 新機能: 動画圧縮処理
+        # 動画のサイズが大きい場合に自動的に圧縮を適用する
+        try:
+            logger.info("ファイルサイズをチェックし、必要に応じて動画圧縮を適用します")
+            video_compressor = VideoCompressor()  # デフォルト設定で初期化（1GB超で圧縮）
+            input_file_path = Path(input_file)
+            processed_file, was_compressed = video_compressor.compress_if_needed(input_file_path)
+            
+            if was_compressed:
+                logger.info(f"動画が圧縮されました。圧縮後のファイルを使用します: {processed_file}")
+                input_file = processed_file
+                compression_performed = True
+                compressed_file = processed_file
+            else:
+                logger.info("動画圧縮は不要または適用されませんでした。元のファイルを使用します。")
+        except VideoCompressionError as e:
+            logger.error(f"動画圧縮中にエラーが発生しました: {str(e)}")
+            logger.warning("圧縮処理をスキップして元のファイルを使用します")
+        except Exception as e:
+            logger.error(f"予期しない動画圧縮エラー: {str(e)}", exc_info=True)
+            logger.warning("圧縮処理をスキップして元のファイルを使用します")
+
         # 追加: ファイル形式の判定・変換処理
         original_path = str(input_file)
         try:
@@ -148,6 +173,14 @@ def process_audio_file(input_file: Path, modes: dict) -> dict:
         if conversion_performed and converted_file and converted_file.exists():
             try:
                 cleanup_file(str(converted_file))
-                logger.info(f"一時ファイルを削除しました: {converted_file}")
+                logger.info(f"変換一時ファイルを削除しました: {converted_file}")
             except Exception as e:
-                logger.warning(f"一時ファイルの削除に失敗: {str(e)}") 
+                logger.warning(f"変換一時ファイルの削除に失敗: {str(e)}")
+        
+        # 圧縮された一時ファイルのクリーンアップ
+        if compression_performed and compressed_file and compressed_file.exists():
+            try:
+                compressed_file.unlink()
+                logger.info(f"圧縮一時ファイルを削除しました: {compressed_file}")
+            except Exception as e:
+                logger.warning(f"圧縮一時ファイルの削除に失敗: {str(e)}") 
