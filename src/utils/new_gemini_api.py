@@ -398,19 +398,26 @@ class GeminiAPI:
         Raises:
             GeminiAPIError: タイトル生成に失敗した場合
         """
+
         try:
             # タイトル生成用の設定
             title_config = {
-                "temperature": 1.0,
+                "temperature": 0.1,
                 "top_p": 0.95,
                 "top_k": 40,
-                "max_output_tokens": 100,
+                "max_output_tokens": 200,
                 "response_mime_type": "application/json",
             }
-            
+
             # タイトル生成用のプロンプト
-            system_prompt = "会議の書き起こしからこの会議のメインとなる議題が何だったのかを教えて。JSON形式で {\"title\": \"会議タイトル\"} と出力してください。"
-            
+            system_prompt = """
+会議の書き起こしからこの会議のメインとなる議題が何だったのかを短くまとめて下記のフォーマットで出力せよ。
+JSON形式で。
+{
+    "title": "会議タイトル"
+}
+
+"""
             # コンテンツ準備
             contents = [
                 transcription_text,
