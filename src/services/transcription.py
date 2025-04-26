@@ -91,7 +91,7 @@ class TranscriptionService:
 
         # 設定の読み込み
         self.config = self._load_config(config_path)
-        self.transcription_method = self.config.get("transcription", {}).get("method", "gpt4_audio")
+        self.transcription_method = self.config.get("transcription", {}).get("method", "gemini")
         logger.info(f"書き起こし方式: {self.transcription_method}")
 
         # 再試行フラグの初期化
@@ -146,7 +146,7 @@ class TranscriptionService:
 
             if not config_file.exists():
                 logger.info("設定ファイルが見つかりません。デフォルトの設定を使用します。")
-                default_config = {"transcription": {"method": "gpt4_audio"}}
+                default_config = {"transcription": {"method": "gemini"}}
                 logger.info(f"デフォルト設定内容: {default_config}")
                 return default_config
 
@@ -157,7 +157,7 @@ class TranscriptionService:
                     # 空ファイルチェック
                     if not config_text:
                         logger.warning("設定ファイルが空です。デフォルトの設定を使用します。")
-                        default_config = {"transcription": {"method": "gpt4_audio"}}
+                        default_config = {"transcription": {"method": "gemini"}}
                         logger.info(f"空ファイル時のデフォルト設定内容: {default_config}")
                         return default_config
 
@@ -171,28 +171,28 @@ class TranscriptionService:
                     config = json.loads(config_text)
             except json.JSONDecodeError as e:
                 logger.warning(f"設定ファイルのJSONパースに失敗しました: {str(e)}。デフォルトの設定を使用します。")
-                default_config = {"transcription": {"method": "gpt4_audio"}}
+                default_config = {"transcription": {"method": "gemini"}}
                 logger.info(f"JSONエラー時のデフォルト設定内容: {default_config}")
                 return default_config
             except Exception as e:
                 logger.warning(f"設定ファイルの読み込み中に予期せぬエラーが発生しました: {str(e)}。デフォルトの設定を使用します。")
-                default_config = {"transcription": {"method": "gpt4_audio"}}
+                default_config = {"transcription": {"method": "gemini"}}
                 logger.info(f"その他エラー時のデフォルト設定内容: {default_config}")
                 return default_config
 
-            method = config.get("transcription", {}).get("method", "gpt4_audio")
+            method = config.get("transcription", {}).get("method", "gemini")
             logger.info(f"読み込まれた書き起こし方式: {method}")
 
             if method not in ["whisper_gpt4", "gpt4_audio", "gemini"]:
                 logger.warning(f"無効な書き起こし方式が指定されています: {method}")
-                logger.info("デフォルトの書き起こし方式を使用します。")
-                config["transcription"]["method"] = "gpt4_audio"
+                logger.info("デフォルトの書き起こし方式 'gemini' を使用します。")
+                config["transcription"]["method"] = "gemini"
 
             return config
 
         except Exception as e:
             logger.error(f"設定ファイルの処理中に予期せぬエラーが発生しました: {str(e)}")
-            default_config = {"transcription": {"method": "gpt4_audio"}}
+            default_config = {"transcription": {"method": "gemini"}}
             logger.info(f"最終エラー時のデフォルト設定内容: {default_config}")
             return default_config
 
@@ -265,8 +265,8 @@ class TranscriptionService:
             # メディアファイルを分割（AudioSplitterを使わず、ffmpeg_handlerを使用）
             logger.info("メディアファイルの分割を開始")
             split_files = split_media_fixed_duration(
-                str(audio_file), 
-                str(segments_dir), 
+                str(audio_file),
+                str(segments_dir),
                 segment_length
             )
             logger.info(f"メディアを {len(split_files)} 個のセグメントに分割しました")
