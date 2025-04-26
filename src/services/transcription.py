@@ -211,16 +211,12 @@ class TranscriptionService:
             logger.info(f"タイムスタンプ: {timestamp}")
 
             # 書き起こし処理の実行
-            if self.transcription_method == "whisper_gpt4":
-                # このメソッドはOpenAI依存のため、エラーとして処理するか、代替実装を検討
-                logger.error("Whisper + GPT-4方式は現在サポートされていません。Gemini方式を使用してください。")
-                raise TranscriptionError("Whisper + GPT-4方式は現在サポートされていません。")
-            elif self.transcription_method == "gemini":
+            if self.transcription_method == "gemini":
                 result = self._process_with_gemini(audio_file, timestamp)
-            else:  # gpt4_audio
-                # このメソッドもOpenAI依存のため、エラーとして処理するか、代替実装を検討
-                logger.error("GPT-4 Audio方式は現在サポートされていません。Gemini方式を使用してください。")
-                raise TranscriptionError("GPT-4 Audio方式は現在サポートされていません。")
+            else:
+                # gemini 以外の方式はサポートされていないためエラーとする
+                logger.error(f"サポートされていない書き起こし方式です: {self.transcription_method}。Gemini方式を使用してください。")
+                raise TranscriptionError(f"サポートされていない書き起こし方式です: {self.transcription_method}。Gemini方式を使用してください。")
 
             # 処理完了後、最大再試行回数に達したかどうかをチェックして通知
             if self.has_reached_max_retries:
@@ -232,16 +228,6 @@ class TranscriptionService:
         except Exception as e:
             logger.error(f"書き起こし処理中にエラーが発生しました: {str(e)}")
             raise TranscriptionError(f"書き起こしに失敗しました: {str(e)}")
-
-    def _process_with_whisper_gpt4(self, audio_file: pathlib.Path, additional_prompt: str, timestamp: str) -> Dict[str, Any]:
-        """Whisper + GPT-4方式での書き起こし処理 (廃止)"""
-        logger.error("この関数 (_process_with_whisper_gpt4) はOpenAI依存のため廃止されました。")
-        raise NotImplementedError("Whisper + GPT-4方式は現在サポートされていません。")
-
-    def _process_with_gpt4_audio(self, audio_file: pathlib.Path, timestamp: str) -> Dict[str, Any]:
-        """GPT-4 Audio方式での書き起こし処理 (廃止)"""
-        logger.error("この関数 (_process_with_gpt4_audio) はOpenAI依存のため廃止されました。")
-        raise NotImplementedError("GPT-4 Audio方式は現在サポートされていません。")
 
     def _process_with_gemini(self, audio_file: pathlib.Path, timestamp: str) -> Dict[str, Any]:
         """Gemini方式での書き起こし処理"""

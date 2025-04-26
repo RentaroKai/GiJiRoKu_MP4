@@ -12,7 +12,7 @@
 ## 🚀 かんたん使い方
 
 #### Step 1: ダウンロード
-exe準備中。python実行すれば動く
+https://github.com/RentaroKai/GiJiRoKu_MP4/releases/
 
 #### Step 2: 起動
 1. 「GiJiRoKu.exe」をダブルクリックして起動
