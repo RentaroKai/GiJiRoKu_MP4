@@ -7,6 +7,9 @@ Thumbs.db
 # ログファイル
 *.log
 
+
+tools
+
 # 依存関係やビルド生成物
 node_modules/
 build/
