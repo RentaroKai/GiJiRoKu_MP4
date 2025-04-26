@@ -97,7 +97,7 @@ https://github.com/RentaroKai/GiJiRoKu_MP4/releases/
 ## 🛠️ ビルド方法
 
 ```bash
-pyinstaller GiJiRoKu.spec
+pyinstaller GiJiRoKu_MP4.spec
 ```
 
 ## 📝 ライセンス情報

@@ -45,7 +45,7 @@ exe = EXE(
     a.zipfiles,
     a.datas,
     [],
-    name='GiJiRoKu',
+    name='GiJiRoKu_MP4',
     debug=False,  # デバッグモードを有効化
     bootloader_ignore_signals=False,
     strip=False,  # デバッグ情報を保持

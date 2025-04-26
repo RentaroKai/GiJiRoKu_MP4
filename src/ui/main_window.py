@@ -129,9 +129,7 @@ class MainWindow:
         """ファイル選択ダイアログを表示"""
         file_path = filedialog.askopenfilename(
             filetypes=[
-                ("音声/動画ファイル", "*.mp3 *.wav *.mp4 *.m4a *.aac *.flac *.ogg *.mkv *.avi *.mov *.flv"),
-                ("音声ファイル", "*.mp3 *.wav *.m4a *.aac *.flac *.ogg"),
-                ("動画ファイル", "*.mp4 *.mkv *.avi *.mov *.flv"),
+                ("Gemini対応動画", "*.mp4 *.mpeg *.mov *.avi *.flv *.mpg *.webm *.wmv *.3gp"),
                 ("すべてのファイル", "*.*")
             ]
         )
