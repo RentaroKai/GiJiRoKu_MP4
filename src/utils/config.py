@@ -29,9 +29,9 @@ class SummarizationConfig(BaseModel):
 
 class ModelsConfig(BaseModel):
     """AIモデル名設定モデル"""
-    gemini_transcription: str = "gemini-2.5-pro-exp-03-25"
-    gemini_minutes: str = "gemini-2.5-pro-exp-03-25"
-    gemini_title: str = "gemini-2.0-flash"
+    gemini_transcription: str = "gemini-2.5-flash-preview-04-17"
+    gemini_minutes: str = "gemini-2.5-flash-preview-04-17"
+    gemini_title: str = "gemini-2.5-flash-preview-04-17"
 
 class AppConfig(BaseModel):
     """アプリケーション設定モデル"""
