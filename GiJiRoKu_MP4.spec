@@ -28,6 +28,10 @@ a = Analysis(
         'scipy',
         'PIL',
         'pygame',
+        'google.cloud',          # 使っていなければ
+        'google.protobuf.pyext', # C 拡張
+        'rich', 'pygments',      # カラフル出力; GUI なら不要
+        'pytest', 'unittest',    # テスト専用
     ],
     win_no_prefer_redirects=False,
     win_private_assemblies=False,
