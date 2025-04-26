@@ -2,7 +2,7 @@ import logging
 from typing import Optional
 from ..utils.new_gemini_api import GeminiAPI, GeminiAPIError as TranscriptionError
 from ..utils.summarizer import Summarizer
-#from ..utils.config import config_manager
+# from ..utils.config import config_manager # 削除
 
 logger = logging.getLogger(__name__)
 

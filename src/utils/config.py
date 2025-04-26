@@ -3,7 +3,7 @@ import json
 import logging
 from pathlib import Path
 from typing import Dict, Any, Optional
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 import sys
 from .path_resolver import get_config_file_path
 
