@@ -39,7 +39,8 @@ https://github.com/RentaroKai/GiJiRoKu_MP4/releases/
 
 ### Google APIキー
 1. [GoogleのAI Studio](https://aistudio.google.com/app/apikey)でAPIキーを作成
-2. 作成したAPIキーをアプリの設定画面で入力または環境変数「GOOGLE_API_KEY」に設定
+2. 作成したAPIキーをアプリ→設定→GeminiAPIKeyに入力→保存。
+または環境変数「GOOGLE_API_KEY」に設定
 
 ## ⚙️ 設定画面の使い方
 

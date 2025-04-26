@@ -32,10 +32,8 @@ class TitleGeneratorFactory:
             if transcription_method == "gemini":
                 return GeminiTitleGenerator()
             else:
-                # OpenAI関連の方式は削除されたため、エラーとする
+                # gemini 以外の方式はサポートされていないためエラーとする
                 logger.warning(f"サポートされていない書き起こし方式です: {transcription_method}。Gemini方式のみサポートされています。")
-                # 必要に応じてGeminiをフォールバックとして返すか、エラーを発生させる
-                # return GeminiTitleGenerator()  # フォールバックする場合
                 raise TitleGeneratorFactoryError(f"サポートされていない書き起こし方式です: {transcription_method}。Gemini方式を使用してください。")
                 
         except Exception as e:
