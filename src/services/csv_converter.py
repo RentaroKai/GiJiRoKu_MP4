@@ -32,12 +32,12 @@ class CSVConverterService:
     def _extract_conversations(self, content: str) -> List[Dict[str, str]]:
         """テキストから会話データを抽出"""
         conversations = []
-        
+
         # より柔軟な正規表現パターン
         pattern = r'(?:"speaker"|speaker)\s*:?\s*"?([^",}\n]+)"?\s*,?\s*(?:"utterance"|utterance)\s*:?\s*"?([^"}\n][^}\n]*[^",}\n])"?'
-        
+
         logger.debug(f"テキストの抽出を開始します。テキスト長: {len(content)}")
-        
+
         # マルチラインで検索
         matches = re.finditer(pattern, content, re.MULTILINE | re.DOTALL)
         match_count = 0
@@ -51,7 +51,7 @@ class CSVConverterService:
             if not speaker or not utterance:
                 logger.warning(f"空の発話者または発話を検出: speaker='{speaker}', utterance='{utterance}'")
                 continue
-                
+
             if len(speaker) > 100:
                 logger.warning(f"異常に長い発話者名を検出: {speaker[:50]}...")
                 continue
@@ -91,13 +91,28 @@ class CSVConverterService:
             try:
                 # まずJSONとしてパースを試みる
                 json_data = json.loads(content)
+                logger.debug(f"JSONパース試行成功。型: {type(json_data)}")
+
                 if isinstance(json_data, dict) and "conversations" in json_data:
                     data = json_data["conversations"]
                     logger.info("会話データをJSONオブジェクトから抽出しました")
                 elif isinstance(json_data, list):
-                    data = json_data
-                    logger.info("会話データをJSON配列から抽出しました")
-                logger.info(f"JSONデータの読み込みに成功しました。{len(data)}件の会話を検出")
+                    # list の各要素が dict かつ "conversations" キーを持つかチェック
+                    if json_data and isinstance(json_data[0], dict) and "conversations" in json_data[0]:
+                        # ネストを平坦化
+                        data = [item for block in json_data
+                                     for item in block.get("conversations", [])]
+                        logger.info("ネストされたJSON配列から会話データを抽出しました")
+                    else:
+                        # 単純なリスト形式の場合 (後方互換性のため残す)
+                        data = json_data
+                        logger.info("単純なJSON配列からデータを抽出しました (注意: 意図しない形式の可能性あり)")
+                else:
+                    logger.warning(f"予期しないJSON構造です。型: {type(json_data)}。テキスト抽出を試みます。")
+                    raise json.JSONDecodeError("Unexpected JSON structure", content, 0)
+
+                logger.info(f"JSONデータの読み込みに成功しました。抽出したデータ数: {len(data)}")
+
             except json.JSONDecodeError as e:
                 logger.warning(f"JSONパースに失敗: {str(e)}。テキストベースの抽出を試みます")
                 # テキストベースの抽出を実行
@@ -110,6 +125,7 @@ class CSVConverterService:
             if not data:
                 error_msg = "有効な会話データが見つかりませんでした"
                 logger.error(error_msg)
+                # ここで例外を発生させる方が後続処理に進まないため安全
                 raise CSVConversionError(error_msg)
 
             # CSVファイルの作成 - BOM付きUTF-8で保存
@@ -119,11 +135,19 @@ class CSVConverterService:
 
                 valid_records = 0
                 for record in data:
-                    speaker = record.get("speaker", "").strip()
-                    utterance = record.get("utterance", "").strip()
-                    if speaker and utterance:  # 空のレコードは除外
-                        csvwriter.writerow([speaker, utterance])
-                        valid_records += 1
+                    # recordが辞書であることを確認
+                    if isinstance(record, dict):
+                        speaker = record.get("speaker", "").strip()
+                        utterance = record.get("utterance", "").strip()
+                        if speaker and utterance:  # 空のレコードは除外
+                            csvwriter.writerow([speaker, utterance])
+                            valid_records += 1
+                    else:
+                        logger.warning(f"予期しないレコード形式です: {type(record)} - {str(record)[:50]}...")
+
+            # 有効レコードがない場合、警告を出す
+            if valid_records == 0:
+                logger.warning(f"CSVファイルに有効なレコードが書き込まれませんでした: {output_file}")
 
             logger.info(f"CSV変換が完了しました! 出力ファイル: {output_file}, 有効レコード数: {valid_records}")
             return output_file
@@ -135,4 +159,4 @@ class CSVConverterService:
 
     def get_output_path(self, input_file: pathlib.Path) -> pathlib.Path:
         """出力ファイルパスの生成"""
-        return self.output_dir / f"{input_file.stem}.csv" 
+        return self.output_dir / f"{input_file.stem}.csv"
