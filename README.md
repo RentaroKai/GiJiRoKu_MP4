@@ -82,7 +82,7 @@ https://github.com/RentaroKai/GiJiRoKu_MP4/releases/
 
 - `minutes.txt`: 議事録の作成方法と形式
 - `reflection.txt`: 会議の振り返り分析の基準
-- `transcriptionGEMINI.txt`: 音声の書き起こし整形ルール
+- `transcription.txt`: 音声の書き起こし整形ルール
 
 ### AIモデルの変更
 `settings.json`ファイルでGeminiモデルの種類などを変更できます：
