@@ -45,7 +45,7 @@ class MainWindow:
         # ファイル選択部分
         self.file_frame = ttk.LabelFrame(self.root, text="入力ファイル", padding=10)
         self.file_path_var = tk.StringVar()
-        self.file_path_entry = ttk.Entry(self.file_frame, textvariable=self.file_path_var, width=50)
+        self.file_path_entry = ttk.Entry(self.file_frame, textvariable=self.file_path_var, width=30)
         self.browse_button = ttk.Button(self.file_frame, text="ファイル選択", command=self._browse_file)
         
         # モード選択部分
